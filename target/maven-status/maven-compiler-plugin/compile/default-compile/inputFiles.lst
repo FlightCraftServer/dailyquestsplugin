@@ -1,0 +1,17 @@
+/media/yes/dailyquestsplugin/maindirectory/src/main/java/ru/dailyquests/DailyQuestsPlugin.java
+/media/yes/dailyquestsplugin/maindirectory/src/main/java/ru/dailyquests/command/DailyQuestCommand.java
+/media/yes/dailyquestsplugin/maindirectory/src/main/java/ru/dailyquests/config/ConfigManager.java
+/media/yes/dailyquestsplugin/maindirectory/src/main/java/ru/dailyquests/config/CustomQuestData.java
+/media/yes/dailyquestsplugin/maindirectory/src/main/java/ru/dailyquests/config/DifficultyData.java
+/media/yes/dailyquestsplugin/maindirectory/src/main/java/ru/dailyquests/config/QuestTypeData.java
+/media/yes/dailyquestsplugin/maindirectory/src/main/java/ru/dailyquests/data/DataStorage.java
+/media/yes/dailyquestsplugin/maindirectory/src/main/java/ru/dailyquests/data/PlayerData.java
+/media/yes/dailyquestsplugin/maindirectory/src/main/java/ru/dailyquests/economy/EconomyManager.java
+/media/yes/dailyquestsplugin/maindirectory/src/main/java/ru/dailyquests/gui/QuestMenu.java
+/media/yes/dailyquestsplugin/maindirectory/src/main/java/ru/dailyquests/manager/ProgressListener.java
+/media/yes/dailyquestsplugin/maindirectory/src/main/java/ru/dailyquests/manager/QuestManager.java
+/media/yes/dailyquestsplugin/maindirectory/src/main/java/ru/dailyquests/quest/Quest.java
+/media/yes/dailyquestsplugin/maindirectory/src/main/java/ru/dailyquests/quest/QuestDifficulty.java
+/media/yes/dailyquestsplugin/maindirectory/src/main/java/ru/dailyquests/quest/QuestGenerator.java
+/media/yes/dailyquestsplugin/maindirectory/src/main/java/ru/dailyquests/quest/QuestState.java
+/media/yes/dailyquestsplugin/maindirectory/src/main/java/ru/dailyquests/quest/QuestType.java

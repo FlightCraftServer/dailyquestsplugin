@@ -1,0 +1,33 @@
+package ru.dailyquests.quest;
+
+public enum QuestType {
+    BREAK_BLOCK,
+    MINE_BLOCK,
+    PLACE_BLOCK,
+    KILL_MOB,
+    KILL_ANY,
+    PICKUP_ITEM,
+    DROP_ITEM,
+    VISIT_BIOME,
+    VISIT_DIMENSION,
+    FISH,
+    TRADE,
+    CRAFT,
+    SMELT,
+    ENCHANT,
+    BREED,
+    TAME,
+    SHEAR,
+    MILK,
+    EAT,
+    USE_ITEM,
+    JUMP,
+    WALK,
+    SPRINT,
+    SWIM,
+    FLY,
+    SHOOT,
+    DEAL_DAMAGE,
+    PLAY_TIME,
+    XP
+}
