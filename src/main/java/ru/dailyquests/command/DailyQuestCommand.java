@@ -40,6 +40,7 @@ public class DailyQuestCommand implements CommandExecutor, TabCompleter {
             case "time" -> plugin.msg(player, "time-left", "{time}", plugin.getQuestManager().timeRemaining());
             case "leaderboard" -> showLeaderboard(player);
             case "reroll" -> reroll(player, args);
+            case "clanreroll" -> clanReroll(player, args);
             case "reload" -> {
                 if (!player.hasPermission("dailyquests.admin")) {
                     plugin.msg(player, "no-permission");
@@ -98,10 +99,32 @@ public class DailyQuestCommand implements CommandExecutor, TabCompleter {
         plugin.msg(player, "rerolled", "{player}", name);
     }
 
+    private void clanReroll(Player player, String[] args) {
+        if (!player.hasPermission("dailyquests.admin")) {
+            plugin.msg(player, "no-permission");
+            return;
+        }
+        if (args.length < 2) {
+            plugin.msg(player, "usage");
+            return;
+        }
+        String clanName = args[1];
+        if (!ru.dailyquests.clan.FcClansHook.isAvailable()
+                || plugin.getClanQuestManager() == null) {
+            plugin.msg(player, "clan-quests-off");
+            return;
+        }
+        if (!plugin.getClanQuestManager().rerollClan(clanName)) {
+            plugin.msg(player, "clan-not-found", "{clan}", clanName);
+            return;
+        }
+        plugin.msg(player, "clan-rerolled", "{clan}", clanName);
+    }
+
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            List<String> sub = List.of("time", "leaderboard", "reroll", "reload");
+            List<String> sub = List.of("time", "leaderboard", "reroll", "clanreroll", "reload");
             return sub.stream()
                     .filter(s -> s.startsWith(args[0].toLowerCase()))
                     .toList();
@@ -111,6 +134,18 @@ public class DailyQuestCommand implements CommandExecutor, TabCompleter {
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (p.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
                     names.add(p.getName());
+                }
+            }
+            return names;
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("clanreroll")) {
+            if (plugin.getClanQuestManager() == null) {
+                return List.of();
+            }
+            List<String> names = new ArrayList<>();
+            for (ru.dailyquests.clan.ClanQuestData data : plugin.getClanQuestManager().getClans().values()) {
+                if (data.getClanName().toLowerCase().startsWith(args[1].toLowerCase())) {
+                    names.add(data.getClanName());
                 }
             }
             return names;

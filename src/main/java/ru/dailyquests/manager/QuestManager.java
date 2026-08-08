@@ -201,31 +201,36 @@ public class QuestManager implements Listener {
     }
 
     public void incrementProgress(Player player, QuestType type, String target, int amount) {
-        PlayerData data = players.get(player.getUniqueId());
-        if (data == null || amount <= 0) {
+        if (amount <= 0) {
             return;
         }
-        for (Quest quest : data.getQuests()) {
-            if (quest.getState() != QuestState.ACTIVE || quest.getType() != type) {
-                continue;
+        PlayerData data = players.get(player.getUniqueId());
+        if (data != null) {
+            for (Quest quest : data.getQuests()) {
+                if (quest.getState() != QuestState.ACTIVE || quest.getType() != type) {
+                    continue;
+                }
+                if (!quest.getTarget().isEmpty() && !quest.getTarget().equalsIgnoreCase(target)) {
+                    continue;
+                }
+                quest.setProgress(quest.getProgress() + amount);
+                if (quest.getProgress() >= quest.getCount()) {
+                    quest.setProgress(quest.getCount());
+                    quest.setState(QuestState.COMPLETED);
+                    plugin.msgWithMenu(player, "quest-completed",
+                            "{display}", quest.getDisplay());
+                } else {
+                    plugin.msgWithMenu(player, "progress",
+                            "{display}", quest.getDisplay(),
+                            "{progress}", String.valueOf(quest.getProgress()),
+                            "{count}", String.valueOf(quest.getCount()));
+                }
+                saveAll();
+                break;
             }
-            if (!quest.getTarget().isEmpty() && !quest.getTarget().equalsIgnoreCase(target)) {
-                continue;
-            }
-            quest.setProgress(quest.getProgress() + amount);
-            if (quest.getProgress() >= quest.getCount()) {
-                quest.setProgress(quest.getCount());
-                quest.setState(QuestState.COMPLETED);
-                plugin.msgWithMenu(player, "quest-completed",
-                        "{display}", quest.getDisplay());
-            } else {
-                plugin.msgWithMenu(player, "progress",
-                        "{display}", quest.getDisplay(),
-                        "{progress}", String.valueOf(quest.getProgress()),
-                        "{count}", String.valueOf(quest.getCount()));
-            }
-            saveAll();
-            return;
+        }
+        if (plugin.getClanQuestManager() != null) {
+            plugin.getClanQuestManager().incrementProgress(player, type, target, amount);
         }
     }
 
@@ -256,6 +261,11 @@ public class QuestManager implements Listener {
     }
 
     public void saveAll() {
-        plugin.getDataStorage().saveAll(players);
+        plugin.getDataStorage().saveAll(players, plugin.getClanQuestManager() == null
+                ? java.util.Map.of() : plugin.getClanQuestManager().getClans());
+    }
+
+    public Map<UUID, PlayerData> getPlayers() {
+        return players;
     }
 }

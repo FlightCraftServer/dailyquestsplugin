@@ -14,6 +14,26 @@ quests-per-day: 3
 # Сколько квестов игрок может выполнять одновременно
 max-active: 1
 
+# ============================================
+#  Клановые квесты (FCClans)
+#  Общие для всего клана: прогресс считается
+#  со всех участников. Награда идёт в казну клана.
+#  Требуется установленный плагин FCClans.
+# ============================================
+clan-quests:
+  # Включены ли клановые квесты
+  enabled: true
+  # Сколько клановых квестов выдаётся клану в день
+  quests-per-day: 3
+  # Сколько клановых квестов клан может выполнять одновременно
+  max-active: 1
+  # Фиксированная сложность клановых квестов (EASY/MEDIUM/HARD/EXPERT)
+  difficulty: "MEDIUM"
+  # Множитель количества для клановых квестов (у клана больше ресурсов)
+  count-multiplier: 8.0
+  # Базовая награда кланового квеста (в казну клана)
+  reward: 500
+
 # Таблица лидеров
 leaderboard:
   # Сколько позиций показывать в /dailyquests leaderboard
@@ -673,4 +693,18 @@ messages:
   rerolled: "&aКвесты игрока &e{player}&a пересозданы"
   player-not-found: "&cИгрок &e{player}&c не найден"
   top-bonus: "&eВы в топ-3! Бонус к награде: &a+{bonus} монет"
-  usage: "&e/dailyquests &7— меню квестов | &e/dailyquests time &7— время до сброса | &e/dailyquests leaderboard &7— топ игроков | &e/dailyquests reroll <игрок> &7— пересоздать квесты (админ) | &e/dailyquests reload &7— перезагрузка конфига"
+  not-in-clan: "&cВы не состоите в клане"
+  clan-quests-off: "&cКлановые квесты отключены на сервере"
+  clan-progress: "&e{display}&7 (клановый): &b{progress}&7/&b{count}"
+  clan-quest-taken: "&aКлановый квест принят: &f{display}"
+  clan-quest-in-progress: "&eПрогресс кланового квеста &f{display}&e: &b{progress}&7/&b{count}"
+  clan-quest-completed: "&aКлановый квест выполнен! &f{display}&a. Сдать в меню &e/dailyquests"
+  clan-quest-completed-broadcast: "&aКлановый квест выполнен: &f{display}"
+  clan-quest-claimed: "&aКлановый квест сдан: &f{display}&a. Награда &e+{reward} монет&a в казну клана"
+  clan-quest-claimed-already: "&7Этот клановый квест уже сдан"
+  clan-bank-error: "&cНе удалось зачислить награду в казну клана"
+  clan-already-active: "&cКлан уже выполняет квест! Завершите текущий, чтобы взять новый"
+  clan-new-quests: "&aКлану выданы новые клановые квесты! Откройте меню &e/dailyquests"
+  clan-rerolled: "&aКлановые квесты клана &e{clan}&a пересозданы"
+  clan-not-found: "&cКлан &e{clan}&c не найден"
+  usage: "&e/dailyquests &7— меню квестов | &e/dailyquests time &7— время до сброса | &e/dailyquests leaderboard &7— топ игроков | &e/dailyquests reroll <игрок> &7— пересоздать квесты (админ) | &e/dailyquests clanreroll <клан> &7— пересоздать клановые квесты (админ) | &e/dailyquests reload &7— перезагрузка конфига"

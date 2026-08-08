@@ -22,6 +22,35 @@ public final class QuestGenerator {
 
     public static List<Quest> generate(DailyQuestsPlugin plugin) {
         ConfigManager config = plugin.getConfigManager();
+        List<Source> sources = sources(plugin);
+        List<Quest> quests = new ArrayList<>();
+        int perDay = config.getQuestsPerDay();
+        while (quests.size() < perDay && !sources.isEmpty()) {
+            Source source = pick(sources);
+            sources.remove(source);
+            quests.add(source.buildPersonal(config, RANDOM));
+        }
+        return quests;
+    }
+
+    public static List<Quest> generateClan(DailyQuestsPlugin plugin) {
+        ConfigManager config = plugin.getConfigManager();
+        List<Source> sources = sources(plugin);
+        List<Quest> quests = new ArrayList<>();
+        int perDay = config.getClanQuestsPerDay();
+        QuestDifficulty difficulty = config.getClanDifficulty();
+        double countMultiplier = config.getClanCountMultiplier();
+        int reward = config.getClanReward();
+        while (quests.size() < perDay && !sources.isEmpty()) {
+            Source source = pick(sources);
+            sources.remove(source);
+            quests.add(source.buildClan(config, RANDOM, difficulty, countMultiplier, reward));
+        }
+        return quests;
+    }
+
+    private static List<Source> sources(DailyQuestsPlugin plugin) {
+        ConfigManager config = plugin.getConfigManager();
         List<Source> sources = new ArrayList<>();
         for (QuestType type : QuestType.values()) {
             QuestTypeData data = config.getQuestTypeData(type);
@@ -34,15 +63,7 @@ public final class QuestGenerator {
                 sources.add(new Source(custom.getType(), custom.getWeight(), null, custom));
             }
         }
-
-        List<Quest> quests = new ArrayList<>();
-        int perDay = config.getQuestsPerDay();
-        while (quests.size() < perDay && !sources.isEmpty()) {
-            Source source = pick(sources);
-            sources.remove(source);
-            quests.add(source.build(config, RANDOM));
-        }
-        return quests;
+        return sources;
     }
 
     private static Source pick(List<Source> sources) {
@@ -62,7 +83,7 @@ public final class QuestGenerator {
 
     private record Source(QuestType type, int weight, QuestTypeData typeData, CustomQuestData custom) {
 
-        Quest build(ConfigManager config, Random random) {
+        Quest buildPersonal(ConfigManager config, Random random) {
             QuestDifficulty difficulty = config.pickDifficulty();
             String target;
             int count;
@@ -71,29 +92,55 @@ public final class QuestGenerator {
 
             if (custom != null) {
                 target = custom.pickTarget(random);
-                count = custom.isFixedCount() ? custom.randomCount(random) : scale(custom.randomCount(random), config, difficulty, type);
+                count = custom.isFixedCount() ? custom.randomCount(random)
+                        : scale(custom.randomCount(random), config.getCountMultiplier(difficulty), type);
                 reward = custom.rewardFor(difficulty, config);
                 description = custom.getDescription();
             } else {
                 target = typeData.pickTarget(random);
-                count = scale(typeData.randomCount(random), config, difficulty, type);
+                count = scale(typeData.randomCount(random), config.getCountMultiplier(difficulty), type);
                 reward = Math.max(1, (int) Math.round(config.getReward(difficulty) * typeData.getRewardMultiplier()));
                 description = typeData.getDescription();
             }
+            return new Quest(type, target, difficulty, count, reward, display(description, config, count, target, difficulty, reward));
+        }
 
-            String display = description
+        Quest buildClan(ConfigManager config, Random random, QuestDifficulty difficulty, double countMultiplier, int reward) {
+            String target;
+            int count;
+            String description;
+            double multiplier;
+
+            if (custom != null) {
+                target = custom.pickTarget(random);
+                count = custom.isFixedCount() ? custom.randomCount(random)
+                        : scale(custom.randomCount(random), countMultiplier, type);
+                description = custom.getDescription();
+                multiplier = custom.getRewardMultiplier();
+            } else {
+                target = typeData.pickTarget(random);
+                count = scale(typeData.randomCount(random), countMultiplier, type);
+                description = typeData.getDescription();
+                multiplier = typeData.getRewardMultiplier();
+            }
+            int clanReward = Math.max(1, (int) Math.round(reward * multiplier));
+            return new Quest(type, target, difficulty, count, clanReward, display(description, config, count, target, difficulty, clanReward));
+        }
+
+        private static String display(String description, ConfigManager config, int count, String target,
+                                      QuestDifficulty difficulty, int reward) {
+            return description
                     .replace("{count}", String.valueOf(count))
                     .replace("{target}", config.getTargetDisplay(target))
                     .replace("{difficulty}", config.getDifficultyDisplay(difficulty))
                     .replace("{reward}", String.valueOf(reward));
-            return new Quest(type, target, difficulty, count, reward, display);
         }
 
-        private static int scale(int base, ConfigManager config, QuestDifficulty difficulty, QuestType type) {
+        private static int scale(int base, double multiplier, QuestType type) {
             if (NO_COUNT_SCALE.contains(type)) {
                 return Math.max(1, base);
             }
-            return Math.max(1, (int) Math.round(base * config.getCountMultiplier(difficulty)));
+            return Math.max(1, (int) Math.round(base * multiplier));
         }
     }
 }

@@ -5,6 +5,8 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import ru.dailyquests.clan.ClanQuestManager;
+import ru.dailyquests.clan.FcClansHook;
 import ru.dailyquests.command.DailyQuestCommand;
 import ru.dailyquests.config.ConfigManager;
 import ru.dailyquests.data.DataStorage;
@@ -21,6 +23,7 @@ public final class DailyQuestsPlugin extends JavaPlugin {
     private DataStorage dataStorage;
     private EconomyManager economyManager;
     private QuestManager questManager;
+    private ClanQuestManager clanQuestManager;
     private QuestMenu questMenu;
 
     @Override
@@ -32,11 +35,18 @@ public final class DailyQuestsPlugin extends JavaPlugin {
         dataStorage = new DataStorage(this);
         economyManager = new EconomyManager(this);
         questManager = new QuestManager(this);
+        clanQuestManager = new ClanQuestManager(this);
         questMenu = new QuestMenu(this);
 
         getServer().getPluginManager().registerEvents(questManager, this);
         getServer().getPluginManager().registerEvents(new ProgressListener(this), this);
         getServer().getPluginManager().registerEvents(questMenu, this);
+        if (FcClansHook.isAvailable()) {
+            getServer().getPluginManager().registerEvents(clanQuestManager, this);
+            getLogger().info("FCClans найден, клановые квесты включены.");
+        } else {
+            getLogger().info("FCClans не найден, клановые квесты отключены.");
+        }
 
         DailyQuestCommand command = new DailyQuestCommand(this);
         getCommand("dailyquests").setExecutor(command);
@@ -50,6 +60,9 @@ public final class DailyQuestsPlugin extends JavaPlugin {
     public void onDisable() {
         if (questManager != null) {
             questManager.saveAll();
+        }
+        if (clanQuestManager != null) {
+            clanQuestManager.saveAll();
         }
     }
 
@@ -67,6 +80,10 @@ public final class DailyQuestsPlugin extends JavaPlugin {
             return;
         }
         player.sendMessage(build(message, replacements));
+    }
+
+    public Component componentOf(String key, String... replacements) {
+        return build(configManager.getMessage(key), replacements);
     }
 
     public void msgWithMenu(Player player, String key, String... replacements) {
@@ -105,6 +122,10 @@ public final class DailyQuestsPlugin extends JavaPlugin {
 
     public QuestManager getQuestManager() {
         return questManager;
+    }
+
+    public ClanQuestManager getClanQuestManager() {
+        return clanQuestManager;
     }
 
     public QuestMenu getQuestMenu() {
