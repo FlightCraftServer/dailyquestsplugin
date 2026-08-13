@@ -141,7 +141,6 @@ public class DataStorage {
         for (String key : sec.getKeys(false)) {
             String clanName = unescapeKey(key);
             String date = sec.getString(key + ".date", "");
-            String takenBy = sec.getString(key + ".taken-by", "");
             String p = key + ".quests.";
             List<Quest> quests = new ArrayList<>();
             int questIndex = 0;
@@ -156,6 +155,8 @@ public class DataStorage {
                     Quest q = new Quest(type, target, difficulty, count, reward, display);
                     q.setProgress(sec.getInt(p + questIndex + ".progress"));
                     q.setState(QuestState.valueOf(sec.getString(p + questIndex + ".state", "")));
+                    q.setTakenBy(sec.getString(p + questIndex + ".taken-by", ""));
+                    q.setTakenAt(sec.getString(p + questIndex + ".taken-at", ""));
                     quests.add(q);
                 } catch (Exception ex) {
                     plugin.getLogger().warning("Не удалось загрузить квест клана " + key + ": " + ex.getMessage());
@@ -164,7 +165,6 @@ public class DataStorage {
             }
             ru.dailyquests.clan.ClanQuestData data =
                     new ru.dailyquests.clan.ClanQuestData(clanName, date, quests);
-            data.setTakenBy(takenBy);
             result.put(key, data);
         }
         return result;
@@ -178,7 +178,6 @@ public class DataStorage {
         for (Map.Entry<String, ru.dailyquests.clan.ClanQuestData> entry : clans.entrySet()) {
             String path = "clans." + escapeKey(entry.getKey()) + ".";
             cfg.set(path + "date", entry.getValue().getDate());
-            cfg.set(path + "taken-by", entry.getValue().getTakenBy());
             int index = 0;
             for (Quest q : entry.getValue().getQuests()) {
                 String qp = path + "quests." + index + ".";
@@ -190,6 +189,8 @@ public class DataStorage {
                 cfg.set(qp + "progress", q.getProgress());
                 cfg.set(qp + "state", q.getState().name());
                 cfg.set(qp + "display", q.getDisplay());
+                cfg.set(qp + "taken-by", q.getTakenBy());
+                cfg.set(qp + "taken-at", q.getTakenAt());
                 index++;
             }
         }

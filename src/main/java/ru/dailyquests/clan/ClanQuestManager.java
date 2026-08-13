@@ -15,6 +15,7 @@ import ru.fcclans.api.events.ClanJoinEvent;
 import ru.fcclans.api.events.ClanLeaveEvent;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class ClanQuestManager implements Listener {
             if (!FcClansHook.clanExists(data.getClanName())) {
                 continue;
             }
-            if (!data.getDate().equals(currentDay)) {
+            if (needsRegenerate(data)) {
                 generateQuests(data);
             }
             clans.put(data.getClanName(), data);
@@ -72,16 +73,32 @@ public class ClanQuestManager implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClanJoin(ClanJoinEvent event) {
-        String clanName = event.getClan().getName();
+        if (event.getPlayer() == null) {
+            return;
+        }
+        String clanName = event.getClan() != null ? event.getClan().getName() : FcClansHook.getClanName(event.getPlayer());
+        if (clanName == null) {
+            return;
+        }
         getClanData(clanName);
         saveAll();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClanLeave(ClanLeaveEvent event) {
-        ClanQuestData data = clans.get(event.getClan().getName());
+        ClanQuestData data = null;
+        String clanName = null;
+        if (event.getClan() != null) {
+            clanName = event.getClan().getName();
+        } else if (event.getPlayer() != null) {
+            clanName = FcClansHook.getClanName(event.getPlayer());
+        }
+        if (clanName != null) {
+            data = clans.get(clanName);
+        }
         if (data != null) {
-            plugin.getLogger().info("Игрок " + event.getPlayer().getName()
+            String playerName = event.getPlayer() != null ? event.getPlayer().getName() : "?";
+            plugin.getLogger().info("Игрок " + playerName
                     + " покинул клан, прогресс клана сохранён: " + data.getClanName());
         }
     }
@@ -99,11 +116,16 @@ public class ClanQuestManager implements Listener {
             data = new ClanQuestData(clanName, currentDay, QuestGenerator.generateClan(plugin));
             clans.put(clanName, data);
             saveAll();
-        } else if (!data.getDate().equals(currentDay)) {
+        } else if (needsRegenerate(data)) {
             generateQuests(data);
             saveAll();
         }
         return data;
+    }
+
+    private boolean needsRegenerate(ClanQuestData data) {
+        return !data.getDate().equals(currentDay)
+                || data.getQuests().size() != plugin.getConfigManager().getClanQuestsPerDay();
     }
 
     public ClanQuestData getData(Player player) {
@@ -116,7 +138,7 @@ public class ClanQuestManager implements Listener {
         if (data == null || index < 0 || index >= data.getQuests().size()) {
             return false;
         }
-        if (data.activeCount() >= plugin.getConfigManager().getClanMaxActive()) {
+        if (data.hasTakenQuest()) {
             return false;
         }
         Quest quest = data.getQuests().get(index);
@@ -124,7 +146,9 @@ public class ClanQuestManager implements Listener {
             return false;
         }
         quest.setState(QuestState.ACTIVE);
-        data.setTakenBy(player.getName());
+        quest.setTakenBy(player.getName());
+        quest.setTakenAt(LocalTime.now(zone)
+                .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm")));
         saveAll();
         return true;
     }
@@ -192,7 +216,6 @@ public class ClanQuestManager implements Listener {
         }
         ClanQuestData data = getClanData(clanName);
         generateQuests(data);
-        data.setTakenBy("");
         saveAll();
         return true;
     }

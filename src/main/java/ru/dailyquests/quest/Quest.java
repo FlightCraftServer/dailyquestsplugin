@@ -10,6 +10,8 @@ public class Quest {
     private final String display;
     private int progress;
     private QuestState state;
+    private String takenBy = "";
+    private String takenAt = "";
 
     public Quest(QuestType type, String target, QuestDifficulty difficulty, int count, int reward, String display) {
         this.type = type;
@@ -60,6 +62,22 @@ public class Quest {
 
     public void setState(QuestState state) {
         this.state = state;
+    }
+
+    public String getTakenBy() {
+        return takenBy;
+    }
+
+    public void setTakenBy(String takenBy) {
+        this.takenBy = takenBy == null ? "" : takenBy;
+    }
+
+    public String getTakenAt() {
+        return takenAt;
+    }
+
+    public void setTakenAt(String takenAt) {
+        this.takenAt = takenAt == null ? "" : takenAt;
     }
 
     public static String formatTarget(String target) {

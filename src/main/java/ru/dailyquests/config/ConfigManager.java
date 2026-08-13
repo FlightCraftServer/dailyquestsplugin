@@ -27,7 +27,7 @@ public class ConfigManager {
     private int questsPerDay = 3;
     private int maxActive = 1;
     private boolean clanQuestsEnabled = true;
-    private int clanQuestsPerDay = 3;
+    private int clanQuestsPerDay = 2;
     private int clanMaxActive = 1;
     private QuestDifficulty clanDifficulty = QuestDifficulty.MEDIUM;
     private double clanCountMultiplier = 8.0;

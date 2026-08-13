@@ -21,7 +21,7 @@ public final class FcClansHook {
     }
 
     public static String getClanName(Player player) {
-        if (!isAvailable()) {
+        if (!isAvailable() || player == null) {
             return null;
         }
         return FCClansAPI.getClanName(player);

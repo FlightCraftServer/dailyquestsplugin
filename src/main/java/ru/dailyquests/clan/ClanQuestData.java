@@ -11,7 +11,6 @@ public class ClanQuestData {
     private final String clanName;
     private String date;
     private List<Quest> quests;
-    private String takenBy = "";
 
     public ClanQuestData(String clanName, String date, List<Quest> quests) {
         this.clanName = clanName;
@@ -39,12 +38,8 @@ public class ClanQuestData {
         this.quests = quests;
     }
 
-    public String getTakenBy() {
-        return takenBy;
-    }
-
-    public void setTakenBy(String takenBy) {
-        this.takenBy = takenBy == null ? "" : takenBy;
+    public boolean hasTakenQuest() {
+        return quests.stream().anyMatch(q -> q.getState() != QuestState.AVAILABLE);
     }
 
     public boolean hasActiveQuest() {
@@ -60,14 +55,5 @@ public class ClanQuestData {
                 q.getState() == QuestState.COMPLETED
                         || q.getState() == QuestState.CLAIMED
                         || q.getState() == QuestState.BLOCKED);
-    }
-
-    public String activeTakenBy() {
-        for (Quest q : quests) {
-            if (q.getState() == QuestState.ACTIVE) {
-                return takenBy;
-            }
-        }
-        return "";
     }
 }

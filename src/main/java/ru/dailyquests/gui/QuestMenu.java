@@ -118,7 +118,7 @@ public class QuestMenu implements Listener {
         return item;
     }
 
-    private ItemStack buildClanItem(Quest quest, String takenBy) {
+    private ItemStack buildClanItem(Quest quest) {
         ItemStack item = new ItemStack(iconFor(quest));
         ItemMeta meta = item.getItemMeta();
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
@@ -127,8 +127,9 @@ public class QuestMenu implements Listener {
 
         List<Component> lore = new ArrayList<>();
         lore.add(DailyQuestsPlugin.text("§7Награда: §e" + quest.getReward() + " монет в казну клана"));
-        if (takenBy != null && !takenBy.isEmpty()) {
-            lore.add(DailyQuestsPlugin.text("§7Взял: §a" + takenBy));
+        if (!quest.getTakenBy().isEmpty()) {
+            String at = quest.getTakenAt().isEmpty() ? "" : " §7в " + quest.getTakenAt();
+            lore.add(DailyQuestsPlugin.text("§7Взял: §a" + quest.getTakenBy() + at));
         }
         lore.add(Component.text(" "));
 
@@ -163,17 +164,20 @@ public class QuestMenu implements Listener {
     }
 
     private void buildClanSection(Player player, Inventory inv) {
-        if (plugin.getClanQuestManager() == null || !plugin.getConfigManager().isClanQuestsEnabled()) {
-            return;
+        List<Quest> quests = List.of();
+        if (plugin.getClanQuestManager() != null && plugin.getConfigManager().isClanQuestsEnabled()) {
+            String clanName = FcClansHook.getClanName(player);
+            if (clanName != null) {
+                ClanQuestData data = plugin.getClanQuestManager().getClanData(clanName);
+                quests = data.getQuests();
+            }
         }
-        String clanName = FcClansHook.getClanName(player);
-        if (clanName == null) {
-            return;
-        }
-        ClanQuestData data = plugin.getClanQuestManager().getClanData(clanName);
-        List<Quest> quests = data.getQuests();
-        for (int i = 0; i < quests.size() && i < CLAN_SLOTS.length; i++) {
-            inv.setItem(CLAN_SLOTS[i], buildClanItem(quests.get(i), data.getTakenBy()));
+        for (int i = 0; i < CLAN_SLOTS.length; i++) {
+            if (i < quests.size()) {
+                inv.setItem(CLAN_SLOTS[i], buildClanItem(quests.get(i)));
+            } else {
+                inv.setItem(CLAN_SLOTS[i], filler());
+            }
         }
     }
 
@@ -230,7 +234,7 @@ public class QuestMenu implements Listener {
         open(player);
     }
 
-    private void handleClanClick(Player player, int raw) {
+    private void handleClanClick(Player player, int index) {
         if (plugin.getClanQuestManager() == null || !plugin.getConfigManager().isClanQuestsEnabled()) {
             plugin.msg(player, "clan-quests-off");
             return;
@@ -241,7 +245,6 @@ public class QuestMenu implements Listener {
             return;
         }
         ClanQuestData data = plugin.getClanQuestManager().getClanData(clanName);
-        int index = clanSlotIndex(raw);
         if (index < 0 || index >= data.getQuests().size()) {
             return;
         }
@@ -251,8 +254,10 @@ public class QuestMenu implements Listener {
             case AVAILABLE -> {
                 if (plugin.getClanQuestManager().takeQuest(player, index)) {
                     plugin.msg(player, "clan-quest-taken", "{display}", quest.getDisplay());
-                } else {
+                } else if (data.hasTakenQuest()) {
                     plugin.msg(player, "clan-already-active");
+                } else {
+                    plugin.msg(player, "not-in-clan");
                 }
             }
             case COMPLETED -> {
