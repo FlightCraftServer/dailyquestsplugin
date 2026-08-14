@@ -18,7 +18,7 @@ public class EconomyManager {
         boolean ok = plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), command);
         if (!ok) {
             plugin.getLogger().warning("Не удалось выдать награду " + player.getName()
-                    + " (" + amount + " монет). Команда: " + command);
+                    + " (" + amount + " Ⓕ). Команда: " + command);
         }
         return ok;
     }

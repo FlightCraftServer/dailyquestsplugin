@@ -51,7 +51,7 @@ reward-command: "eco give %player% %amount%"
 #  Сложности
 #  weight            — шанс выпадения сложности
 #  count-multiplier  — множитель количества для квеста
-#  reward            — базовая награда в монетах
+#  reward            — базовая награда в Ⓕ
 #  display           — цвет/название в меню
 # ============================================
 difficulties:
@@ -678,7 +678,7 @@ messages:
   prefix: "&8[<#7dd8f5>Ежедневные квесты</#7dd8f5>&8] &7"
   quest-taken: "&bКвест принят: &f{display}"
   quest-completed: "&bКвест выполнен! &f{display}&b. Открой меню &f/dailyquests&b, чтобы получить награду"
-  quest-claimed: "&bНаграда получена: <#ffe9a8>+{reward} монет</#ffe9a8>&b за квест &f{display}"
+  quest-claimed: "&bНаграда получена: <#ffe9a8>+{reward} Ⓕ</#ffe9a8>&b за квест &f{display}"
   quest-already-active: "&cВы уже выполняете квест! Завершите текущий, чтобы взять новый"
   progress: "&f{display}&7: <#57d5ff>{progress}</#57d5ff>&7/&b{count}"
   open-menu: "&b[Открыть меню]"
@@ -693,7 +693,7 @@ messages:
   leaderboard-empty: "&7Пока никто не выполнял ежедневные квесты"
   rerolled: "&bКвесты игрока &f{player}&b пересозданы"
   player-not-found: "&cИгрок &f{player}&c не найден"
-  top-bonus: "&fВы в топ-3! Бонус к награде: &b+{bonus} монет"
+  top-bonus: "&fВы в топ-3! Бонус к награде: &b+{bonus} Ⓕ"
   not-in-clan: "&cВы не состоите в клане"
   clan-quests-off: "&cКлановые квесты отключены на сервере"
   clan-progress: "&f{display}&7 (клановый): &b{progress}&7/&b{count}"
@@ -701,7 +701,7 @@ messages:
   clan-quest-in-progress: "&fПрогресс кланового квеста &f{display}&f: &b{progress}&7/&b{count}"
   clan-quest-completed: "&bКлановый квест выполнен! &f{display}&b. Сдать в меню &f/dailyquests"
   clan-quest-completed-broadcast: "&bКлановый квест выполнен: &f{display}"
-  clan-quest-claimed: "&bКлановый квест сдан: &f{display}&b. Награда &f+{reward} монет&b в казну клана"
+  clan-quest-claimed: "&bКлановый квест сдан: &f{display}&b. Награда &f+{reward} Ⓕ&b в казну клана"
   clan-quest-claimed-already: "&7Этот клановый квест уже сдан"
   clan-bank-error: "&cНе удалось зачислить награду в казну клана"
   clan-already-active: "&cКлан уже взял квест сегодня! Следующий клановый квест будет доступен завтра"

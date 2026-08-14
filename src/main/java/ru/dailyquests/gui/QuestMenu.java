@@ -96,7 +96,7 @@ public class QuestMenu implements Listener {
         List<Component> lore = new ArrayList<>();
         lore.add(DailyQuestsPlugin.text(
                 "<gray>Сложность: " + plugin.getConfigManager().getDifficultyDisplay(quest.getDifficulty())));
-        lore.add(DailyQuestsPlugin.text("<gray>Награда: <#ffe9a8>" + quest.getReward() + " монет"));
+        lore.add(DailyQuestsPlugin.text("<gray>Награда: <#ffe9a8>" + quest.getReward() + " Ⓕ"));
         lore.add(Component.text(" "));
 
         switch (quest.getState()) {
@@ -128,7 +128,7 @@ public class QuestMenu implements Listener {
                 "<#7dd8f5>[Клан] <white>" + quest.getDisplay()));
 
         List<Component> lore = new ArrayList<>();
-        lore.add(DailyQuestsPlugin.text("<gray>Награда: <#ffe9a8>" + reward + " монет в казну клана"));
+        lore.add(DailyQuestsPlugin.text("<gray>Награда: <#ffe9a8>" + reward + " Ⓕ в казну клана"));
         if (online > 1) {
             lore.add(DailyQuestsPlugin.text("<dark_gray>(база " + quest.getReward()
                     + " × " + online + " онлайн сегодня)"));
