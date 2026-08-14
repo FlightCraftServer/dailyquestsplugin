@@ -9,7 +9,10 @@ import ru.fcclans.api.FCClansAPI;
 import ru.fcclans.models.Clan;
 import ru.fcclans.models.ClanMember;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public final class FcClansHook {
 
@@ -34,6 +37,43 @@ public final class FcClansHook {
         FCClans fcClans = FCClans.getInstance();
         return fcClans != null && fcClans.getClanManager() != null
                 && fcClans.getClanManager().getClanByName(clanName) != null;
+    }
+
+    public static int getClanMemberCount(String clanName) {
+        if (!isAvailable() || clanName == null) {
+            return 0;
+        }
+        FCClans fcClans = FCClans.getInstance();
+        if (fcClans == null || fcClans.getClanManager() == null) {
+            return 0;
+        }
+        Clan clan = fcClans.getClanManager().getClanByName(clanName);
+        if (clan == null) {
+            return 0;
+        }
+        return fcClans.getClanManager().getMemberCount(clan.getId());
+    }
+
+    public static Set<UUID> getOnlineMemberUuids(String clanName) {
+        Set<UUID> result = new HashSet<>();
+        if (!isAvailable() || clanName == null) {
+            return result;
+        }
+        FCClans fcClans = FCClans.getInstance();
+        if (fcClans == null || fcClans.getClanManager() == null) {
+            return result;
+        }
+        Clan clan = fcClans.getClanManager().getClanByName(clanName);
+        if (clan == null) {
+            return result;
+        }
+        for (ClanMember member : fcClans.getClanManager().getMembers(clan.getId())) {
+            Player online = Bukkit.getPlayer(member.getUuid());
+            if (online != null && online.isOnline()) {
+                result.add(member.getUuid());
+            }
+        }
+        return result;
     }
 
     public static boolean addClanMoney(String clanName, double amount) {

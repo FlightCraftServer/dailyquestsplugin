@@ -2,7 +2,7 @@ package ru.dailyquests;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.dailyquests.clan.ClanQuestManager;
@@ -70,8 +70,61 @@ public final class DailyQuestsPlugin extends JavaPlugin {
         return instance;
     }
 
+    private static final MiniMessage MINI_MESSAGE = MiniMessage.builder()
+            .preProcessor(DailyQuestsPlugin::legacyToMiniTags)
+            .build();
+
     public static Component text(String legacy) {
-        return LegacyComponentSerializer.legacySection().deserialize(legacy.replace('&', '§'));
+        if (legacy == null) {
+            return Component.empty();
+        }
+        return MINI_MESSAGE.deserialize(legacy);
+    }
+
+    private static String legacyToMiniTags(String input) {
+        StringBuilder out = new StringBuilder(input.length());
+        char[] chars = input.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            if ((c == '&' || c == '§') && i + 1 < chars.length) {
+                String tag = legacyCodeTag(Character.toLowerCase(chars[i + 1]));
+                if (tag != null) {
+                    out.append('<').append(tag).append('>');
+                    i++;
+                    continue;
+                }
+            }
+            out.append(c);
+        }
+        return out.toString();
+    }
+
+    private static String legacyCodeTag(char code) {
+        return switch (code) {
+            case '0' -> "black";
+            case '1' -> "dark_blue";
+            case '2' -> "dark_green";
+            case '3' -> "dark_aqua";
+            case '4' -> "dark_red";
+            case '5' -> "dark_purple";
+            case '6' -> "gold";
+            case '7' -> "gray";
+            case '8' -> "dark_gray";
+            case '9' -> "blue";
+            case 'a' -> "green";
+            case 'b' -> "aqua";
+            case 'c' -> "red";
+            case 'd' -> "light_purple";
+            case 'e' -> "yellow";
+            case 'f' -> "white";
+            case 'k' -> "obfuscated";
+            case 'l' -> "bold";
+            case 'm' -> "strikethrough";
+            case 'n' -> "underline";
+            case 'o' -> "italic";
+            case 'r' -> "reset";
+            default -> null;
+        };
     }
 
     public void msg(Player player, String key, String... replacements) {

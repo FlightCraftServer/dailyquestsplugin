@@ -25,7 +25,7 @@ import java.util.List;
 public class QuestMenu implements Listener {
 
     private static final Component TITLE =
-            DailyQuestsPlugin.text("§6§lЕжедневные квесты");
+            DailyQuestsPlugin.text("<gradient:#7de8ff:#eafcff><bold>Ежедневные квесты</bold></gradient>");
     private static final int[] QUEST_SLOTS = {11, 13, 15};
     private static final int[] CLAN_SLOTS = {29, 31, 33};
     private static final Material FILLER = Material.GRAY_STAINED_GLASS_PANE;
@@ -46,8 +46,8 @@ public class QuestMenu implements Listener {
             }
         }
 
-        inv.setItem(4, textItem(Material.PLAYER_HEAD, "§6Личные квесты"));
-        inv.setItem(30, textItem(Material.RED_BANNER, clanHeader(player)));
+        inv.setItem(4, textItem(Material.PLAYER_HEAD, "<#7dd8f5>Личные квесты"));
+        inv.setItem(30, textItem(Material.CYAN_BANNER, clanHeader(player)));
 
         List<Quest> quests = data.getQuests();
         for (int i = 0; i < quests.size() && i < QUEST_SLOTS.length; i++) {
@@ -66,7 +66,7 @@ public class QuestMenu implements Listener {
         if (clanName == null) {
             return "&cВы не состоите в клане";
         }
-        return "&6Клановые квесты клана &f" + clanName;
+        return "<#7dd8f5>Клановые квесты клана <white>" + clanName;
     }
 
     private ItemStack filler() {
@@ -95,22 +95,24 @@ public class QuestMenu implements Listener {
 
         List<Component> lore = new ArrayList<>();
         lore.add(DailyQuestsPlugin.text(
-                "§7Сложность: " + plugin.getConfigManager().getDifficultyDisplay(quest.getDifficulty())));
-        lore.add(DailyQuestsPlugin.text("§7Награда: §e" + quest.getReward() + " монет"));
+                "<gray>Сложность: " + plugin.getConfigManager().getDifficultyDisplay(quest.getDifficulty())));
+        lore.add(DailyQuestsPlugin.text("<gray>Награда: <#ffe9a8>" + quest.getReward() + " монет"));
         lore.add(Component.text(" "));
 
         switch (quest.getState()) {
             case AVAILABLE -> lore.add(DailyQuestsPlugin.text(
-                    "§7Нажмите ЛКМ, чтобы взять квест"));
-            case ACTIVE -> lore.add(DailyQuestsPlugin.text(
-                    "§eПрогресс: §b" + quest.getProgress() + "§7/§b" + quest.getCount()
-                            + "§7\n§7Выполняйте задание — прогресс пишется в чат"));
-            case COMPLETED -> {
-                lore.add(DailyQuestsPlugin.text("§aКвест выполнен!"));
-                lore.add(DailyQuestsPlugin.text("§eНажмите ЛКМ, чтобы сдать квест"));
+                    "<gray>Нажмите ЛКМ, чтобы взять квест"));
+            case ACTIVE -> {
+                lore.add(DailyQuestsPlugin.text(
+                        "<white>Прогресс: <#57d5ff>" + quest.getProgress() + "<dark_gray>/<#57d5ff>" + quest.getCount()));
+                lore.add(DailyQuestsPlugin.text("<gray>Выполняйте задание — прогресс пишется в чат"));
             }
-            case CLAIMED -> lore.add(DailyQuestsPlugin.text("§8Квест сдан"));
-            case BLOCKED -> lore.add(DailyQuestsPlugin.text("§8Квест заменён"));
+            case COMPLETED -> {
+                lore.add(DailyQuestsPlugin.text("<#a7f0b8>Квест выполнен!"));
+                lore.add(DailyQuestsPlugin.text("<white>Нажмите ЛКМ, чтобы сдать квест"));
+            }
+            case CLAIMED -> lore.add(DailyQuestsPlugin.text("<dark_gray>Квест сдан"));
+            case BLOCKED -> lore.add(DailyQuestsPlugin.text("<dark_gray>Квест заменён"));
         }
 
         meta.lore(lore);
@@ -118,33 +120,39 @@ public class QuestMenu implements Listener {
         return item;
     }
 
-    private ItemStack buildClanItem(Quest quest) {
+    private ItemStack buildClanItem(Quest quest, int reward, int online) {
         ItemStack item = new ItemStack(iconFor(quest));
         ItemMeta meta = item.getItemMeta();
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
         meta.displayName(DailyQuestsPlugin.text(
-                "§b[Клан] §f" + quest.getDisplay()));
+                "<#7dd8f5>[Клан] <white>" + quest.getDisplay()));
 
         List<Component> lore = new ArrayList<>();
-        lore.add(DailyQuestsPlugin.text("§7Награда: §e" + quest.getReward() + " монет в казну клана"));
+        lore.add(DailyQuestsPlugin.text("<gray>Награда: <#ffe9a8>" + reward + " монет в казну клана"));
+        if (online > 1) {
+            lore.add(DailyQuestsPlugin.text("<dark_gray>(база " + quest.getReward()
+                    + " × " + online + " онлайн сегодня)"));
+        }
         if (!quest.getTakenBy().isEmpty()) {
-            String at = quest.getTakenAt().isEmpty() ? "" : " §7в " + quest.getTakenAt();
-            lore.add(DailyQuestsPlugin.text("§7Взял: §a" + quest.getTakenBy() + at));
+            String at = quest.getTakenAt().isEmpty() ? "" : " <gray>в " + quest.getTakenAt();
+            lore.add(DailyQuestsPlugin.text("<gray>Взял: <#b8a6ff>" + quest.getTakenBy() + at));
         }
         lore.add(Component.text(" "));
 
         switch (quest.getState()) {
             case AVAILABLE -> lore.add(DailyQuestsPlugin.text(
-                    "§7Нажмите ЛКМ, чтобы взять квест для клана"));
-            case ACTIVE -> lore.add(DailyQuestsPlugin.text(
-                    "§eПрогресс: §b" + quest.getProgress() + "§7/§b" + quest.getCount()
-                            + "\n§7Прогресс считается со всего клана"));
-            case COMPLETED -> {
-                lore.add(DailyQuestsPlugin.text("§aКвест выполнен!"));
-                lore.add(DailyQuestsPlugin.text("§eНажмите ЛКМ, чтобы получить награду в казну"));
+                    "<gray>Нажмите ЛКМ, чтобы взять квест для клана"));
+            case ACTIVE -> {
+                lore.add(DailyQuestsPlugin.text(
+                        "<white>Прогресс: <#57d5ff>" + quest.getProgress() + "<dark_gray>/<#57d5ff>" + quest.getCount()));
+                lore.add(DailyQuestsPlugin.text("<gray>Прогресс считается со всего клана"));
             }
-            case CLAIMED -> lore.add(DailyQuestsPlugin.text("§8Квест сдан"));
-            case BLOCKED -> lore.add(DailyQuestsPlugin.text("§8Квест заблокирован"));
+            case COMPLETED -> {
+                lore.add(DailyQuestsPlugin.text("<#a7f0b8>Квест выполнен!"));
+                lore.add(DailyQuestsPlugin.text("<white>Нажмите ЛКМ, чтобы получить награду в казну"));
+            }
+            case CLAIMED -> lore.add(DailyQuestsPlugin.text("<dark_gray>Квест сдан"));
+            case BLOCKED -> lore.add(DailyQuestsPlugin.text("<dark_gray>Квест заблокирован"));
         }
 
         meta.lore(lore);
@@ -165,8 +173,9 @@ public class QuestMenu implements Listener {
 
     private void buildClanSection(Player player, Inventory inv) {
         List<Quest> quests = List.of();
+        String clanName = null;
         if (plugin.getClanQuestManager() != null && plugin.getConfigManager().isClanQuestsEnabled()) {
-            String clanName = FcClansHook.getClanName(player);
+            clanName = FcClansHook.getClanName(player);
             if (clanName != null) {
                 ClanQuestData data = plugin.getClanQuestManager().getClanData(clanName);
                 quests = data.getQuests();
@@ -174,7 +183,10 @@ public class QuestMenu implements Listener {
         }
         for (int i = 0; i < CLAN_SLOTS.length; i++) {
             if (i < quests.size()) {
-                inv.setItem(CLAN_SLOTS[i], buildClanItem(quests.get(i)));
+                Quest quest = quests.get(i);
+                int reward = plugin.getClanQuestManager().getEffectiveReward(clanName, quest);
+                int online = plugin.getClanQuestManager().getOnlineToday(clanName);
+                inv.setItem(CLAN_SLOTS[i], buildClanItem(quest, reward, online));
             } else {
                 inv.setItem(CLAN_SLOTS[i], filler());
             }

@@ -6,7 +6,7 @@ public class Quest {
     private final String target;
     private final QuestDifficulty difficulty;
     private final int count;
-    private final int reward;
+    private int reward;
     private final String display;
     private int progress;
     private QuestState state;
@@ -42,6 +42,10 @@ public class Quest {
 
     public int getReward() {
         return reward;
+    }
+
+    public void setReward(int reward) {
+        this.reward = Math.max(0, reward);
     }
 
     public String getDisplay() {

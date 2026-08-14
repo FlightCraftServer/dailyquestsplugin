@@ -18,12 +18,17 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class ClanQuestManager implements Listener {
 
     private final DailyQuestsPlugin plugin;
     private final Map<String, ClanQuestData> clans = new HashMap<>();
+    private final Map<String, Set<UUID>> onlineToday = new HashMap<>();
     private final ZoneId zone;
     private String currentDay;
 
@@ -36,11 +41,13 @@ public class ClanQuestManager implements Listener {
             if (!FcClansHook.clanExists(data.getClanName())) {
                 continue;
             }
+            normalizeRewards(data);
             if (needsRegenerate(data)) {
                 generateQuests(data);
             }
             clans.put(data.getClanName(), data);
         }
+        refreshOnlineToday();
         plugin.getServer().getScheduler().runTaskTimer(plugin, this::tick, 1200L, 1200L);
     }
 
@@ -53,11 +60,13 @@ public class ClanQuestManager implements Listener {
                 FcClansHook.broadcastToClan(data.getClanName(),
                         plugin.componentOf("clan-new-quests"), plugin);
             }
+            refreshOnlineToday();
             saveAll();
             plugin.getLogger().info("Клановые квесты сброшены. Выданы новые квесты.");
         }
         boolean changed = clans.entrySet().removeIf(e -> !FcClansHook.clanExists(e.getKey()));
         if (changed) {
+            onlineToday.keySet().removeIf(clan -> !clans.containsKey(clan));
             saveAll();
         }
     }
@@ -71,6 +80,33 @@ public class ClanQuestManager implements Listener {
         data.setQuests(QuestGenerator.generateClan(plugin));
     }
 
+    private void normalizeRewards(ClanQuestData data) {
+        int base = plugin.getConfigManager().getClanReward();
+        for (Quest quest : data.getQuests()) {
+            ru.dailyquests.config.QuestTypeData typeData =
+                    plugin.getConfigManager().getQuestTypeData(quest.getType());
+            double mult = typeData == null ? 1.0 : typeData.getRewardMultiplier();
+            quest.setReward(Math.max(1, (int) Math.round(base * mult)));
+        }
+    }
+
+    private void refreshOnlineToday() {
+        onlineToday.clear();
+        for (String clanName : clans.keySet()) {
+            onlineToday.put(clanName, FcClansHook.getOnlineMemberUuids(clanName));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerJoin(org.bukkit.event.player.PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        String clanName = FcClansHook.getClanName(player);
+        if (clanName == null) {
+            return;
+        }
+        onlineToday.computeIfAbsent(clanName, k -> new HashSet<>()).add(player.getUniqueId());
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClanJoin(ClanJoinEvent event) {
         if (event.getPlayer() == null) {
@@ -80,6 +116,7 @@ public class ClanQuestManager implements Listener {
         if (clanName == null) {
             return;
         }
+        onlineToday.computeIfAbsent(clanName, k -> new HashSet<>()).add(event.getPlayer().getUniqueId());
         getClanData(clanName);
         saveAll();
     }
@@ -95,6 +132,10 @@ public class ClanQuestManager implements Listener {
         }
         if (clanName != null) {
             data = clans.get(clanName);
+            Set<UUID> online = onlineToday.get(clanName);
+            if (online != null && event.getPlayer() != null) {
+                online.remove(event.getPlayer().getUniqueId());
+            }
         }
         if (data != null) {
             String playerName = event.getPlayer() != null ? event.getPlayer().getName() : "?";
@@ -133,6 +174,35 @@ public class ClanQuestManager implements Listener {
         return clanName == null ? null : getClanData(clanName);
     }
 
+    public boolean hasActiveQuest(Player player, QuestType type, String target) {
+        String clanName = FcClansHook.getClanName(player);
+        if (clanName == null) {
+            return false;
+        }
+        ClanQuestData data = clans.get(clanName);
+        if (data == null) {
+            return false;
+        }
+        for (Quest quest : data.getQuests()) {
+            if (quest.getState() != QuestState.ACTIVE || quest.getType() != type) {
+                continue;
+            }
+            if (quest.getTarget().isEmpty() || quest.getTarget().equalsIgnoreCase(target)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getEffectiveReward(String clanName, Quest quest) {
+        int online = onlineToday.getOrDefault(clanName, Set.of()).size();
+        return quest.getReward() * Math.max(1, online);
+    }
+
+    public int getOnlineToday(String clanName) {
+        return onlineToday.getOrDefault(clanName, Set.of()).size();
+    }
+
     public boolean takeQuest(Player player, int index) {
         ClanQuestData data = getData(player);
         if (data == null || index < 0 || index >= data.getQuests().size()) {
@@ -162,7 +232,7 @@ public class ClanQuestManager implements Listener {
         if (quest.getState() != QuestState.COMPLETED) {
             return -1;
         }
-        int reward = quest.getReward();
+        int reward = getEffectiveReward(data.getClanName(), quest);
         if (!FcClansHook.addClanMoney(data.getClanName(), reward)) {
             plugin.msg(player, "clan-bank-error");
             return -1;
