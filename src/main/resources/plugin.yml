@@ -1,15 +1,16 @@
 name: DailyQuests
-version: 1.0.0
+version: 1.3.0
 main: ru.dailyquests.DailyQuestsPlugin
 api-version: '1.21'
+softdepend: [FCClans]
 authors:
   - flw
-description: "Ежедневные квесты: задания, награды и сброс каждый день в 00:00 МСК"
+description: "Ежедневные квесты: задания, награды и сброс каждый день в 00:00 МСК. Клановые квесты через FCClans."
 
 commands:
   dailyquests:
     description: "Открыть меню ежедневных квестов"
-    usage: "/dailyquests [time|reload]"
+    usage: "/dailyquests [time|leaderboard|reroll|clanreroll|reload]"
     aliases: [dq]
 
 permissions:
@@ -17,5 +18,5 @@ permissions:
     description: "Позволяет пользоваться ежедневными квестами"
     default: true
   dailyquests.admin:
-    description: "Позволяет перезагружать конфиг"
+    description: "Позволяет перезагружать конфиг и пересоздавать квесты"
     default: op

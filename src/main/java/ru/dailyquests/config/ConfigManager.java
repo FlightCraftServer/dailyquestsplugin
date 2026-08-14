@@ -26,6 +26,12 @@ public class ConfigManager {
     private LocalTime resetTime = LocalTime.of(0, 0);
     private int questsPerDay = 3;
     private int maxActive = 1;
+    private boolean clanQuestsEnabled = true;
+    private int clanQuestsPerDay = 2;
+    private int clanMaxActive = 1;
+    private QuestDifficulty clanDifficulty = QuestDifficulty.MEDIUM;
+    private double clanCountMultiplier = 8.0;
+    private int clanReward = 500;
     private int leaderboardSize = 10;
     private int topPositions = 3;
     private int bonusPercent = 20;
@@ -63,6 +69,21 @@ public class ConfigManager {
 
         questsPerDay = Math.max(1, c.getInt("quests-per-day", 3));
         maxActive = Math.max(1, c.getInt("max-active", 1));
+
+        ConfigurationSection cl = c.getConfigurationSection("clan-quests");
+        if (cl != null) {
+            clanQuestsEnabled = cl.getBoolean("enabled", true);
+            clanQuestsPerDay = Math.max(1, cl.getInt("quests-per-day", 3));
+            clanMaxActive = Math.max(1, cl.getInt("max-active", 1));
+            String diffName = cl.getString("difficulty", "MEDIUM");
+            try {
+                clanDifficulty = QuestDifficulty.valueOf(diffName.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                clanDifficulty = QuestDifficulty.MEDIUM;
+            }
+            clanCountMultiplier = Math.max(1.0, cl.getDouble("count-multiplier", 8.0));
+            clanReward = Math.max(1, cl.getInt("reward", 500));
+        }
         leaderboardSize = Math.max(1, c.getInt("leaderboard.size", 10));
         topPositions = Math.max(0, c.getInt("leaderboard.top-positions", 3));
         bonusPercent = Math.max(0, c.getInt("leaderboard.bonus-percent", 20));
@@ -202,6 +223,30 @@ public class ConfigManager {
 
     public int getMaxActive() {
         return maxActive;
+    }
+
+    public boolean isClanQuestsEnabled() {
+        return clanQuestsEnabled;
+    }
+
+    public int getClanQuestsPerDay() {
+        return clanQuestsPerDay;
+    }
+
+    public int getClanMaxActive() {
+        return clanMaxActive;
+    }
+
+    public QuestDifficulty getClanDifficulty() {
+        return clanDifficulty;
+    }
+
+    public double getClanCountMultiplier() {
+        return clanCountMultiplier;
+    }
+
+    public int getClanReward() {
+        return clanReward;
     }
 
     public int getLeaderboardSize() {

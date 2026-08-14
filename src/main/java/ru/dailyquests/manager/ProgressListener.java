@@ -160,23 +160,23 @@ public class ProgressListener implements Listener {
         if (dx == 0 && dy == 0 && dz == 0) {
             return;
         }
+        UUID id = p.getUniqueId();
+
+        boolean onGround = p.isOnGround();
+        boolean wasOnGround = lastOnGround.getOrDefault(id, false);
+        lastOnGround.put(id, onGround);
+        if (dy > 0 && wasOnGround && !onGround) {
+            plugin.getQuestManager().incrementProgress(p, QuestType.JUMP, "", 1);
+        }
 
         boolean blockMoved = from.getBlockX() != to.getBlockX()
                 || from.getBlockY() != to.getBlockY()
                 || from.getBlockZ() != to.getBlockZ();
         if (blockMoved) {
-            UUID id = p.getUniqueId();
-
             String biome = to.getBlock().getBiome().name();
             String last = lastBiome.put(id, biome);
             if (!biome.equals(last)) {
                 plugin.getQuestManager().incrementProgress(p, QuestType.VISIT_BIOME, biome, 1);
-            }
-
-            boolean onGround = p.isOnGround();
-            Boolean wasOnGround = lastOnGround.put(id, onGround);
-            if (dy > 0 && Boolean.TRUE.equals(wasOnGround) && !onGround) {
-                plugin.getQuestManager().incrementProgress(p, QuestType.JUMP, "", 1);
             }
         }
 
@@ -185,19 +185,29 @@ public class ProgressListener implements Listener {
             return;
         }
         QuestManager qm = plugin.getQuestManager();
-        UUID id = p.getUniqueId();
-        if (p.isOnGround() && !p.isSprinting() && qm.hasActiveQuest(p, QuestType.WALK, "")) {
+        if (p.isOnGround() && !p.isSprinting() && hasDistanceQuest(p, QuestType.WALK)) {
             addDistance(id, DIST_WALK, dist2d, QuestType.WALK, p);
         }
-        if (p.isOnGround() && p.isSprinting() && qm.hasActiveQuest(p, QuestType.SPRINT, "")) {
+        if (p.isOnGround() && p.isSprinting() && hasDistanceQuest(p, QuestType.SPRINT)) {
             addDistance(id, DIST_SPRINT, dist2d, QuestType.SPRINT, p);
         }
-        if (p.isSwimming() && qm.hasActiveQuest(p, QuestType.SWIM, "")) {
+        if (p.isSwimming() && hasDistanceQuest(p, QuestType.SWIM)) {
             addDistance(id, DIST_SWIM, dist2d, QuestType.SWIM, p);
         }
-        if ((p.isGliding() || p.isFlying()) && qm.hasActiveQuest(p, QuestType.FLY, "")) {
+        if ((p.isGliding() || p.isFlying()) && hasDistanceQuest(p, QuestType.FLY)) {
             addDistance(id, DIST_FLY, dist2d, QuestType.FLY, p);
         }
+    }
+
+    private boolean hasDistanceQuest(Player p, QuestType type) {
+        QuestManager qm = plugin.getQuestManager();
+        if (qm.hasActiveQuest(p, type, "")) {
+            return true;
+        }
+        if (plugin.getClanQuestManager() != null) {
+            return plugin.getClanQuestManager().hasActiveQuest(p, type, "");
+        }
+        return false;
     }
 
     private void addDistance(UUID id, int index, double amount, QuestType type, Player p) {

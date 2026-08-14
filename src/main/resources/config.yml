@@ -14,6 +14,27 @@ quests-per-day: 3
 # Сколько квестов игрок может выполнять одновременно
 max-active: 1
 
+# ============================================
+#  Клановые квесты (FCClans)
+#  Общие для всего клана: прогресс считается
+#  со всех участников. Награда идёт в казну клана.
+#  Требуется установленный плагин FCClans.
+# ============================================
+clan-quests:
+  # Включены ли клановые квесты
+  enabled: true
+  # Сколько клановых квестов выдаётся клану в день
+  quests-per-day: 2
+  # Сколько клановых квестов клан может выполнять одновременно
+  max-active: 1
+  # Фиксированная сложность клановых квестов (EASY/MEDIUM/HARD/EXPERT)
+  difficulty: "EXPERT"
+  # Множитель количества для клановых квестов (у клана больше ресурсов).
+  # Чем выше — тем большее количество требуется выполнить
+  count-multiplier: 15.0
+  # Базовая награда кланового квеста (в казну клана)
+  reward: 200
+
 # Таблица лидеров
 leaderboard:
   # Сколько позиций показывать в /dailyquests leaderboard
@@ -30,7 +51,7 @@ reward-command: "eco give %player% %amount%"
 #  Сложности
 #  weight            — шанс выпадения сложности
 #  count-multiplier  — множитель количества для квеста
-#  reward            — базовая награда в монетах
+#  reward            — базовая награда в Ⓕ
 #  display           — цвет/название в меню
 # ============================================
 difficulties:
@@ -38,22 +59,22 @@ difficulties:
     weight: 40
     count-multiplier: 1.0
     reward: 10
-    display: "&aЛёгкий"
+    display: "<#a9edff>Лёгкий"
   MEDIUM:
     weight: 30
     count-multiplier: 2.0
     reward: 30
-    display: "&eСредний"
+    display: "<#dffaff>Средний"
   HARD:
     weight: 20
     count-multiplier: 5.0
     reward: 50
-    display: "&6Сложный"
+    display: "<#62caff>Сложный"
   EXPERT:
     weight: 10
     count-multiplier: 10.0
     reward: 100
-    display: "&cЭкспертный"
+    display: "<#8e9fff>Экспертный"
 
 # ============================================
 #  Типы квестов
@@ -76,7 +97,7 @@ quests:
     enabled: true
     weight: 100
     icon: DIAMOND_PICKAXE
-    description: "Сломай &e{count}&7 блоков: &e{target}"
+    description: "Сломай &f{count}&7 блоков: &f{target}"
     count-range: [15, 30]
     reward-multiplier: 1.0
     targets:
@@ -101,7 +122,7 @@ quests:
     enabled: true
     weight: 90
     icon: DIAMOND
-    description: "Добудь &e{count}&7 предметов из руды: &e{target}"
+    description: "Добудь &f{count}&7 предметов из руды: &f{target}"
     count-range: [6, 12]
     reward-multiplier: 1.0
     targets:
@@ -120,7 +141,7 @@ quests:
     enabled: true
     weight: 80
     icon: BRICK
-    description: "Поставь &e{count}&7 блоков: &e{target}"
+    description: "Поставь &f{count}&7 блоков: &f{target}"
     count-range: [15, 30]
     reward-multiplier: 1.0
     targets:
@@ -138,7 +159,7 @@ quests:
     enabled: true
     weight: 100
     icon: IRON_SWORD
-    description: "Убей &e{count}&7 мобов: &e{target}"
+    description: "Убей &f{count}&7 мобов: &f{target}"
     count-range: [8, 15]
     reward-multiplier: 1.0
     targets:
@@ -166,7 +187,7 @@ quests:
     enabled: true
     weight: 80
     icon: WOODEN_SWORD
-    description: "Убей &e{count}&7 любых мобов"
+    description: "Убей &f{count}&7 любых мобов"
     count-range: [10, 20]
     reward-multiplier: 0.9
     targets: []
@@ -174,7 +195,7 @@ quests:
     enabled: true
     weight: 70
     icon: HOPPER
-    description: "Подбери &e{count}&7 предметов: &e{target}"
+    description: "Подбери &f{count}&7 предметов: &f{target}"
     count-range: [8, 16]
     reward-multiplier: 1.0
     targets:
@@ -194,7 +215,7 @@ quests:
     enabled: true
     weight: 50
     icon: DROPPER
-    description: "Выброси &e{count}&7 предметов: &e{target}"
+    description: "Выброси &f{count}&7 предметов: &f{target}"
     count-range: [8, 16]
     reward-multiplier: 1.0
     targets:
@@ -212,7 +233,7 @@ quests:
     enabled: true
     weight: 60
     icon: FILLED_MAP
-    description: "Побывай в биоме: &e{target}"
+    description: "Побывай в биоме: &f{target}"
     count-range: [1, 1]
     reward-multiplier: 1.0
     targets:
@@ -245,7 +266,7 @@ quests:
     enabled: true
     weight: 50
     icon: END_PORTAL_FRAME
-    description: "Посети измерение: &e{target}"
+    description: "Посети измерение: &f{target}"
     count-range: [1, 1]
     reward-multiplier: 1.0
     targets:
@@ -256,7 +277,7 @@ quests:
     enabled: true
     weight: 60
     icon: FISHING_ROD
-    description: "Поймай рыбу &e{count}&7 раз"
+    description: "Поймай рыбу &f{count}&7 раз"
     count-range: [5, 10]
     reward-multiplier: 1.0
     targets: []
@@ -264,7 +285,7 @@ quests:
     enabled: true
     weight: 60
     icon: EMERALD
-    description: "Поторгуйся с жителем &e{count}&7 раз"
+    description: "Поторгуйся с жителем &f{count}&7 раз"
     count-range: [5, 10]
     reward-multiplier: 1.0
     targets: []
@@ -272,7 +293,7 @@ quests:
     enabled: true
     weight: 70
     icon: CRAFTING_TABLE
-    description: "Скрафти &e{count}&7 предметов: &e{target}"
+    description: "Скрафти &f{count}&7 предметов: &f{target}"
     count-range: [5, 12]
     reward-multiplier: 1.0
     targets:
@@ -292,7 +313,7 @@ quests:
     enabled: true
     weight: 60
     icon: FURNACE
-    description: "Переплавь &e{count}&7 предметов: &e{target}"
+    description: "Переплавь &f{count}&7 предметов: &f{target}"
     count-range: [5, 12]
     reward-multiplier: 1.0
     targets:
@@ -308,7 +329,7 @@ quests:
     enabled: true
     weight: 50
     icon: ENCHANTING_TABLE
-    description: "Зачаруй &e{count}&7 предметов"
+    description: "Зачаруй &f{count}&7 предметов"
     count-range: [2, 5]
     reward-multiplier: 1.0
     targets: []
@@ -316,7 +337,7 @@ quests:
     enabled: true
     weight: 50
     icon: WHEAT
-    description: "Разведи животных &e{count}&7 раз"
+    description: "Разведи животных &f{count}&7 раз"
     count-range: [2, 5]
     reward-multiplier: 1.0
     targets: []
@@ -324,7 +345,7 @@ quests:
     enabled: true
     weight: 40
     icon: BONE
-    description: "Приручи &e{count}&7 животных"
+    description: "Приручи &f{count}&7 животных"
     count-range: [1, 3]
     reward-multiplier: 1.0
     targets: []
@@ -332,7 +353,7 @@ quests:
     enabled: true
     weight: 40
     icon: SHEARS
-    description: "Остриги &e{count}&7 овец"
+    description: "Остриги &f{count}&7 овец"
     count-range: [2, 5]
     reward-multiplier: 1.0
     targets: []
@@ -340,7 +361,7 @@ quests:
     enabled: true
     weight: 40
     icon: MILK_BUCKET
-    description: "Подои &e{count}&7 коров или коз"
+    description: "Подои &f{count}&7 коров или коз"
     count-range: [1, 3]
     reward-multiplier: 1.0
     targets: []
@@ -348,7 +369,7 @@ quests:
     enabled: true
     weight: 60
     icon: COOKED_BEEF
-    description: "Съешь &e{count}&7 предметов: &e{target}"
+    description: "Съешь &f{count}&7 предметов: &f{target}"
     count-range: [5, 10]
     reward-multiplier: 1.0
     targets:
@@ -368,7 +389,7 @@ quests:
     enabled: true
     weight: 55
     icon: ENDER_PEARL
-    description: "Используй &e{count}&7 раз предмет: &e{target}"
+    description: "Используй &f{count}&7 раз предмет: &f{target}"
     count-range: [5, 15]
     reward-multiplier: 1.0
     targets:
@@ -384,7 +405,7 @@ quests:
     enabled: true
     weight: 70
     icon: RABBIT_FOOT
-    description: "Прыгни &e{count}&7 раз"
+    description: "Прыгни &f{count}&7 раз"
     count-range: [25, 50]
     reward-multiplier: 1.0
     targets: []
@@ -392,7 +413,7 @@ quests:
     enabled: true
     weight: 60
     icon: LEATHER_BOOTS
-    description: "Пройди &e{count}&7 метров"
+    description: "Пройди &f{count}&7 метров"
     count-range: [100, 300]
     reward-multiplier: 1.0
     targets: []
@@ -400,7 +421,7 @@ quests:
     enabled: true
     weight: 60
     icon: GOLDEN_BOOTS
-    description: "Пробеги &e{count}&7 метров"
+    description: "Пробеги &f{count}&7 метров"
     count-range: [200, 500]
     reward-multiplier: 1.0
     targets: []
@@ -408,7 +429,7 @@ quests:
     enabled: true
     weight: 40
     icon: PRISMARINE_SHARD
-    description: "Проплыви &e{count}&7 метров"
+    description: "Проплыви &f{count}&7 метров"
     count-range: [50, 150]
     reward-multiplier: 1.0
     targets: []
@@ -416,7 +437,7 @@ quests:
     enabled: true
     weight: 40
     icon: ELYTRA
-    description: "Пролети &e{count}&7 метров"
+    description: "Пролети &f{count}&7 метров"
     count-range: [100, 400]
     reward-multiplier: 1.0
     targets: []
@@ -424,7 +445,7 @@ quests:
     enabled: true
     weight: 55
     icon: BOW
-    description: "Попади по цели &e{count}&7 раз"
+    description: "Попади по цели &f{count}&7 раз"
     count-range: [5, 15]
     reward-multiplier: 1.0
     targets: []
@@ -432,7 +453,7 @@ quests:
     enabled: true
     weight: 70
     icon: DIAMOND_SWORD
-    description: "Нанеси &e{count}&7 единиц урона"
+    description: "Нанеси &f{count}&7 единиц урона"
     count-range: [50, 150]
     reward-multiplier: 1.0
     targets: []
@@ -440,7 +461,7 @@ quests:
     enabled: true
     weight: 55
     icon: CLOCK
-    description: "Играй на сервере &e{count}&7 минут"
+    description: "Играй на сервере &f{count}&7 минут"
     count-range: [10, 20]
     reward-multiplier: 1.0
     targets: []
@@ -448,7 +469,7 @@ quests:
     enabled: true
     weight: 55
     icon: EXPERIENCE_BOTTLE
-    description: "Собери &e{count}&7 опыта"
+    description: "Собери &f{count}&7 опыта"
     count-range: [30, 100]
     reward-multiplier: 1.0
     targets: []
@@ -501,7 +522,7 @@ custom-quests:
     enabled: true
     weight: 10
     icon: WHEAT
-    description: "Собери урожай: &e{count}&7 растений"
+    description: "Собери урожай: &f{count}&7 растений"
     count-range: [50, 100]
     targets:
       - WHEAT
@@ -654,23 +675,37 @@ target-displays:
 #  {reward}, {time} заменяются автоматически)
 # ============================================
 messages:
-  prefix: "&8[&6Ежедневные квесты&8] &7"
-  quest-taken: "&aКвест принят: &f{display}"
-  quest-completed: "&aКвест выполнен! &f{display}&a. Открой меню &e/dailyquests&a, чтобы получить награду"
-  quest-claimed: "&aНаграда получена: &e+{reward} монет&a за квест &f{display}"
+  prefix: "&8[<#7dd8f5>Ежедневные квесты</#7dd8f5>&8] &7"
+  quest-taken: "&bКвест принят: &f{display}"
+  quest-completed: "&bКвест выполнен! &f{display}&b. Открой меню &f/dailyquests&b, чтобы получить награду"
+  quest-claimed: "&bНаграда получена: <#ffe9a8>+{reward} Ⓕ</#ffe9a8>&b за квест &f{display}"
   quest-already-active: "&cВы уже выполняете квест! Завершите текущий, чтобы взять новый"
-  progress: "&e{display}&7: &b{progress}&7/&b{count}"
-  open-menu: "&a[Открыть меню]"
-  new-quests: "&aНа сегодня выданы новые квесты! Открой меню &e/dailyquests"
-  time-left: "&aДо сброса квестов: &e{time}"
-  reloaded: "&aКонфиг перезагружен"
+  progress: "&f{display}&7: <#57d5ff>{progress}</#57d5ff>&7/&b{count}"
+  open-menu: "&b[Открыть меню]"
+  new-quests: "&bНа сегодня выданы новые квесты! Открой меню &f/dailyquests"
+  time-left: "&bДо сброса квестов: &f{time}"
+  reloaded: "&bКонфиг перезагружен"
   no-permission: "&cНедостаточно прав"
   quest-claimed-already: "&7Этот квест уже сдан"
-  quest-in-progress: "&eПрогресс квеста &f{display}&e: &b{progress}&7/&b{count}"
-  leaderboard-title: "&6&l— Топ игроков по ежедневным квестам —"
-  leaderboard-line: "&7{place}. &e{name} &8— &b{completed} &7квестов"
+  quest-in-progress: "&fПрогресс квеста &f{display}&f: <#57d5ff>{progress}</#57d5ff>&7/&b{count}"
+  leaderboard-title: "&b&l— Топ игроков по ежедневным квестам —"
+  leaderboard-line: "&7{place}. &f{name} &8— &b{completed} &7квестов"
   leaderboard-empty: "&7Пока никто не выполнял ежедневные квесты"
-  rerolled: "&aКвесты игрока &e{player}&a пересозданы"
-  player-not-found: "&cИгрок &e{player}&c не найден"
-  top-bonus: "&eВы в топ-3! Бонус к награде: &a+{bonus} монет"
-  usage: "&e/dailyquests &7— меню квестов | &e/dailyquests time &7— время до сброса | &e/dailyquests leaderboard &7— топ игроков | &e/dailyquests reroll <игрок> &7— пересоздать квесты (админ) | &e/dailyquests reload &7— перезагрузка конфига"
+  rerolled: "&bКвесты игрока &f{player}&b пересозданы"
+  player-not-found: "&cИгрок &f{player}&c не найден"
+  top-bonus: "&fВы в топ-3! Бонус к награде: &b+{bonus} Ⓕ"
+  not-in-clan: "&cВы не состоите в клане"
+  clan-quests-off: "&cКлановые квесты отключены на сервере"
+  clan-progress: "&f{display}&7 (клановый): &b{progress}&7/&b{count}"
+  clan-quest-taken: "&bКлановый квест принят: &f{display}"
+  clan-quest-in-progress: "&fПрогресс кланового квеста &f{display}&f: &b{progress}&7/&b{count}"
+  clan-quest-completed: "&bКлановый квест выполнен! &f{display}&b. Сдать в меню &f/dailyquests"
+  clan-quest-completed-broadcast: "&bКлановый квест выполнен: &f{display}"
+  clan-quest-claimed: "&bКлановый квест сдан: &f{display}&b. Награда &f+{reward} Ⓕ&b в казну клана"
+  clan-quest-claimed-already: "&7Этот клановый квест уже сдан"
+  clan-bank-error: "&cНе удалось зачислить награду в казну клана"
+  clan-already-active: "&cКлан уже взял квест сегодня! Следующий клановый квест будет доступен завтра"
+  clan-new-quests: "&bКлану выданы новые клановые квесты! Откройте меню &f/dailyquests"
+  clan-rerolled: "&bКлановые квесты клана &f{clan}&b пересозданы"
+  clan-not-found: "&cКлан &f{clan}&c не найден"
+  usage: "&f/dailyquests &7— меню квестов | &f/dailyquests time &7— время до сброса | &f/dailyquests leaderboard &7— топ игроков | &f/dailyquests reroll <игрок> &7— пересоздать квесты (админ) | &f/dailyquests clanreroll <клан> &7— пересоздать клановые квесты (админ) | &f/dailyquests reload &7— перезагрузка конфига"
